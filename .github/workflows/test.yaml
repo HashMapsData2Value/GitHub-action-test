@@ -4,29 +4,29 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ubuntu:
-  #   runs-on: ubuntu-latest
+  ubuntu:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Setup Go
-  #       uses: actions/setup-go@v2
-  #       with:
-  #         go-version: 1.22
-  #     - name: Run Ubuntu commands
-  #       run: |
-  #         sudo apt-get update -y && sudo apt-get upgrade -y
-  #         git clone https://github.com/algorandfoundation/hack-tui.git
-  #         cd hack-tui
-  #         git checkout feat/algod-node-install
-  #         go build .
-  #         sudo ./hack-tui node install
-  #         sudo ./hack-tui node start
-  #         systemctl status algorand.service
-  #         curl http://localhost:8080/genesis
-  #         sudo ./hack-tui node stop
-  #         sudo ./hack-tui node upgrade
-  #         # sudo ./hack-tui node configure
-  #         sudo ./hack-tui node uninstall
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.22
+      - name: Run Ubuntu commands
+        run: |
+          sudo apt-get update -y && sudo apt-get upgrade -y
+          git clone https://github.com/algorandfoundation/hack-tui.git
+          cd hack-tui
+          git checkout feat/algod-node-install
+          go build .
+          sudo ./hack-tui node install
+          sudo ./hack-tui node start
+          systemctl status algorand.service
+          curl http://localhost:8080/genesis
+          sudo ./hack-tui node stop
+          sudo ./hack-tui node upgrade
+          # sudo ./hack-tui node configure
+          sudo ./hack-tui node uninstall
 
   # redhat-ubi9:
   #   runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
           sudo launchctl print system/com.algorand.algod
           export TOKEN=$(cat ~/.algorand/algod.admin.token)
           sleep 5
-          curl http://localhost:8080/genesis
+          curl http://localhost:8080/v2/participation -H "X-Algo-API-Token: $TOKEN" | grep "null"
           sudo ./hack-tui node stop
           sudo ./hack-tui node upgrade
           # sudo ./hack-tui node configure
