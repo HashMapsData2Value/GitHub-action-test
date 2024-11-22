@@ -22,7 +22,8 @@ jobs:
           sudo ./hack-tui node install
           sudo ./hack-tui node start
           systemctl status algorand.service
-          curl http://localhost:8080/genesis
+          export TOKEN=$(cat /var/lib/algorand/algod.admin.token)
+          curl http://localhost:8080/v2/participation -H "X-Algo-API-Token: $TOKEN" | grep "null"
           sudo ./hack-tui node stop
           sudo ./hack-tui node upgrade
           # sudo ./hack-tui node configure
