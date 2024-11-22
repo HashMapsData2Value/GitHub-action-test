@@ -4,10 +4,67 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker_setup:
+  ubuntu:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Docker Test
+      - name: Run Ubuntu commands
         run: |
-          docker --version
+          sudo apt-get upgrade -y && sudo apt-get update -y
+          sudo apt-get install golang-go -y
+          git clone https://github.com/algorandfoundation/hack-tui.git
+          cd hack-tui
+          git checkout feat/algod-node-install
+          go build .
+          sudo ./hack-tui node install
+          sudo ./hack-tui node start
+          systemctl status algorand.service
+          export TOKEN=$(cat ~/.algorand/algod.admin.token)
+          curl localhost:8080/v2/participation -H "X-Algo-API-Token: $TOKEN"
+          sudo ./hack-tui node stop
+          sudo ./hack-tui node upgrade
+          # sudo ./hack-tui node configure
+          sudo ./hack-tui node uninstall
+
+  redhat-ubi9:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull Docker image
+        run: docker pull redhat/ubi9-init
+
+      - name: Start Docker container
+        run: docker run -d --name sbox redhat/ubi9-init sleep infinity
+
+      - name: Exec into Docker container and run commands
+        run: |
+          docker exec sbox bash -c "dnf install -y git"
+          docker exec sbox bash -c "dnf install -y go"
+          docker exec sbox bash -c "cd ~/ && git clone https://github.com/algorandfoundation/hack-tui.git"
+          docker exec sbox bash -c "cd ~/hack-tui && git checkout feat/algod-node-install"
+          docker exec sbox bash -c "cd ~/hack-tui && go build ."
+          docker exec sbox bash -c ". ~/hack-tui/hack-tui node install"
+          docker exec sbox bash -c ". ~/hack-tui/hack-tui node start"
+          docker exec sbox bash -c ". ~/hack-tui/hack-tui node stop"
+          docker exec sbox bash -c ". ~/hack-tui/hack-tui node upgrade"
+          docker exec sbox bash -c ". ~/hack-tui/hack-tui node uninstall"
+
+  macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Run MacOs commands
+        run: |
+          brew install go
+          cd ~/ && git clone https://github.com/algorandfoundation/hack-tui.git
+          git checkout feat/algod-node-install
+          go build .
+          sudo ./hack-tui node install
+          sudo ./hack-tui node start
+          sudo launchctl print system/com.algorand.algod
+          export TOKEN=$(cat ~/.algorand/algod.admin.token)
+          curl localhost:8080/v2/participation -H "X-Algo-API-Token: $TOKEN"
+          sudo ./hack-tui node stop
+          sudo ./hack-tui node upgrade
+          # sudo ./hack-tui node configure
+          sudo ./hack-tui node uninstall
