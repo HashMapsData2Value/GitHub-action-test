@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Run Ubuntu commands
         run: |
-          sudo apt-get upgrade -y && sudo apt-get update -y
+          sudo apt-get update -y && sudo apt-get upgrade -y
           sudo apt-get install golang-go -y
           git clone https://github.com/algorandfoundation/hack-tui.git
           cd hack-tui
@@ -43,11 +43,11 @@ jobs:
           docker exec sbox bash -c "cd ~/ && git clone https://github.com/algorandfoundation/hack-tui.git"
           docker exec sbox bash -c "cd ~/hack-tui && git checkout feat/algod-node-install"
           docker exec sbox bash -c "cd ~/hack-tui && go build ."
-          docker exec sbox bash -c ". ~/hack-tui/hack-tui node install"
-          docker exec sbox bash -c ". ~/hack-tui/hack-tui node start"
-          docker exec sbox bash -c ". ~/hack-tui/hack-tui node stop"
-          docker exec sbox bash -c ". ~/hack-tui/hack-tui node upgrade"
-          docker exec sbox bash -c ". ~/hack-tui/hack-tui node uninstall"
+          docker exec sbox bash -c "cd ~/hack-tui && sudo ./hack-tui node install"
+          docker exec sbox bash -c "cd ~/hack-tui && sudo ./hack-tui node start"
+          docker exec sbox bash -c "cd ~/hack-tui && sudo ./hack-tui node stop"
+          docker exec sbox bash -c "cd ~/hack-tui && sudo ./hack-tui node upgrade"
+          docker exec sbox bash -c "cd ~/hack-tui && sudo ./hack-tui node uninstall"
 
   macos:
     runs-on: macos-latest
@@ -56,7 +56,9 @@ jobs:
       - name: Run MacOs commands
         run: |
           brew install go
-          cd ~/ && git clone https://github.com/algorandfoundation/hack-tui.git
+          cd ~/
+          git clone https://github.com/algorandfoundation/hack-tui.git
+          cd hack-tui
           git checkout feat/algod-node-install
           go build .
           sudo ./hack-tui node install
