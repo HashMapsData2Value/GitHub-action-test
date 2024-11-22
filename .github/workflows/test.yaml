@@ -66,8 +66,8 @@ jobs:
           sudo ./hack-tui node install
           sudo ./hack-tui node start
           sudo launchctl print system/com.algorand.algod
-          export TOKEN=$(cat ~/.algorand/algod.admin.token)
           sleep 15
+          export TOKEN=$(cat ~/.algorand/algod.admin.token)
           curl http://localhost:8080/v2/participation -H "X-Algo-API-Token: $TOKEN" | grep "null"
           sudo ./hack-tui node stop
           sudo ./hack-tui node upgrade
